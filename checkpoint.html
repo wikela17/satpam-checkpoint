@@ -26,34 +26,32 @@
     }
 
     function sendData() {
-  navigator.geolocation.getCurrentPosition(function(position) {
-    const data = new URLSearchParams();
-    data.append("satpam_id", document.querySelector('[name="satpam_id"]').value);
-    data.append("checkpoint_id", document.querySelector('[name="checkpoint_id"]').value);
-    data.append("latitude", position.coords.latitude);
-    data.append("longitude", position.coords.longitude);
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const data = {
+          satpam_id: document.querySelector('[name="satpam_id"]').value,
+          checkpoint_id: document.querySelector('[name="checkpoint_id"]').value,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        };
 
-    fetch("https://script.google.com/macros/s/AKfycbw9zcxKNxET0IQWyBwsnDFgFbBvvNkLdImPfGL9zAPFCvx2stWQRR7FFFmXczZGBYw77g/exec", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: data.toString()
-    })
-    .then(res => res.text())
-    .then(txt => {
-      document.getElementById("status").textContent = "Terkirim ✅";
-      console.log("Response:", txt);
-    })
-    .catch(err => {
-      document.getElementById("status").textContent = "Gagal: " + err;
-      console.error("Error:", err);
-    });
-  }, function(error) {
-    document.getElementById("status").textContent = "GPS tidak tersedia ❌";
-  });
-}
-
+        fetch("https://script.google.com/macros/s/AKfycbw9zcxKNxET0IQWyBwsnDFgFbBvvNkLdImPfGL9zAPFCvx2stWQRR7FFFmXczZGBYw77g/exec", {
+          method: "POST",
+            mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        })
+        .then(res => {
+          document.getElementById("status").textContent = "Terkirim ✅";
+        })
+        .catch(err => {
+          document.getElementById("status").textContent = "Gagal: " + err.message;
+        });
+      }, function(error) {
+        document.getElementById("status").textContent = "GPS tidak tersedia ❌";
+      });
+    }
   </script>
 </body>
 </html>
